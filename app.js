@@ -6,6 +6,7 @@ const helloRoutes = require('./routes/helloRoute');
 const courseRoutes = require('./routes/courseRoute');
 const authRoutes = require('./routes/authRoute');
 const productRoutes = require('./routes/productRoute');
+const categoryRoutes = require('./routes/categoryRoute');
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use('/api/hello', helloRoutes);
 app.use('/api/course', courseRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
 
 module.exports = app;
