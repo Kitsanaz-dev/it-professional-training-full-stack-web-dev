@@ -28,9 +28,9 @@ const orderItemSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
     orderNumber: {
-        type: String,
+        type: Number,
         unique: true,
-        required: true
+        default: 1,
     },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
