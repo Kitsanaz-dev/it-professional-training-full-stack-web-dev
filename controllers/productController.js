@@ -25,7 +25,7 @@ const getAllProducts = async (req, res) => {
         const skip = (page - 1) * limit;
         
         const products = await Product.find(query)
-            .populate('category', 'name color')
+            // .populate('category', 'name color')
             .sort({ createdAt: -1 })
             .limit(parseInt(limit))
             .skip(skip);
@@ -48,7 +48,7 @@ const getAllProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id)
-            .populate('category', 'name description');
+            //.populate('category', 'name description');
         
         if (!product) {
             return res.status(404).json({
@@ -192,7 +192,8 @@ const getLowStockProducts = async (req, res) => {
         const lowStockProducts = await Product.find({
             stock: { $lt: parseInt(threshold) },
             isActive: true
-        }).populate('category', 'name');
+        })
+        //.populate('category', 'name');
         
         res.json({
             success: true,
