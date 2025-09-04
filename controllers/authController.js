@@ -239,6 +239,90 @@ const refreshToken = async (req, res) => {
   }
 };
 
+// Logout user
+const logout = async (req, res) => {
+  try {
+      const { refreshToken } = req.body;
+      const userId = req.user?.userId;
+      
+      if (userId && refreshToken) {
+          // Remove refresh token from user
+          await User.updateOne(
+              { _id: userId },
+              { $pull: { refreshTokens: { token: refreshToken } } }
+          );
+      }
+      
+      res.json({
+          success: true,
+          message: 'Logout successful'
+      });
+      
+  } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({
+          success: false,
+          message: 'Logout failed'
+      });
+  }
+};
+
+// Logout from all devices
+const logoutAll = async (req, res) => {
+  try {
+      const userId = req.user.userId;
+      
+      // Remove all refresh tokens
+      await User.updateOne(
+          { _id: userId },
+          { $set: { refreshTokens: [] } }
+      );
+      
+      res.json({
+          success: true,
+          message: 'Logged out from all devices'
+      });
+      
+  } catch (error) {
+      console.error('Logout all error:', error);
+      res.status(500).json({
+          success: false,
+          message: 'Logout failed'
+      });
+  }
+};
+
+// Get current user profile
+const getProfile = async (req, res) => {
+  try {
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+          return res.status(404).json({
+              success: false,
+              message: 'User not found'
+          });
+      }
+      
+      res.json({
+          success: true,
+          data: { user }
+      });
+      
+  } catch (error) {
+      console.error('Get profile error:', error);
+      res.status(500).json({
+          success: false,
+          message: 'Failed to get profile'
+      });
+  }
+};
+
 module.exports = {
-  register
+  register,
+  login,
+  refreshToken,
+  logout,
+  logoutAll,
+  getProfile
 };
