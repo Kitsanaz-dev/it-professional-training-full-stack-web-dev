@@ -10,6 +10,7 @@ const categoryRoutes = require('./routes/categoryRoute');
 const customerRoutes = require('./routes/customerRoute');
 const orderRoute = require('./routes/orderRoute');
 const userRoutes = require('./routes/userRoute');
+const { version } = require("mongoose");
 
 const app = express();
 
@@ -28,6 +29,11 @@ app.use(limiter);
 
 // Routes
 app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.json({ message: 'Welcome to the API', success: true, version: version });
+});
+
 app.use('/api/hello', helloRoutes);
 app.use('/api/course', courseRoutes);
 app.use('/api/auth', authRoutes);
