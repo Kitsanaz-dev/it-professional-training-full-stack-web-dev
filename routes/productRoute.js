@@ -1,13 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
+const { authenticate } = require('../middleware/auth');
+const { authorize } = require('../middleware/authorize');
 
-router.get('/', productController.getAllProducts);
-router.post('/', productController.createProduct);
-router.get('/:id', productController.getProductById);
-router.put('/:id', productController.updateProduct);
-router.patch('/:id', productController.updateStock);
-router.delete('/:id', productController.deleteProduct);
-router.get('/', productController.getLowStockProducts);
+// Public routes (no authentication required)
+router.get('/', productController.getAllProducts); // Anyone can view products
+router.get('/low-stock', authenticate, authorize(['admin', 'manager']), productController.getLowStockProducts);
+router.get('/:id', productController.getProductById); // Anyone can view single product
+
+// Protected routes (authentication required)
+router.post('/', authenticate, authorize(['admin', 'manager']), productController.createProduct);
+router.put('/:id', authenticate, authorize(['admin', 'manager']), productController.updateProduct);
+router.patch('/:id/stock', authenticate, authorize(['admin', 'manager', 'cashier']), productController.updateStock);
+router.delete('/:id', authenticate, authorize(['admin', 'manager']), productController.deleteProduct);
 
 module.exports = router;

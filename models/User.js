@@ -87,11 +87,11 @@ const userSchema = new mongoose.Schema({
             type: String,
             default: null
         },
-        department: {
-            type: String,
-            enum: ['sales', 'inventory', 'management', 'support'],
-            default: 'sales'
-        }
+        // department: {
+        //     type: String,
+        //     enum: ['sales', 'inventory', 'management', 'support'],
+        //     default: 'sales'
+        // }
     }
 }, {
     timestamps: true
