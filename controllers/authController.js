@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const { generateToken, generateRefreshToken } = require('../utils/jwt');
 const { comparePassword } = require('../utils/passwordUtils');
+const { hashPassword } = require('../utils/passwordUtils');
+const { verifyRefreshToken } = require('../utils/jwt');
 
 // Register new user
 const register = async (req, res) => {
