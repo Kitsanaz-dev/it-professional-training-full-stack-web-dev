@@ -5,19 +5,19 @@ const User = require('../models/User');
 const authenticate = async (req, res, next) => {
     try {
         const authHeader = req.header('Authorization');
-        
+
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({
                 success: false,
                 message: 'Access token is required'
             });
         }
-        
+
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-        
+
         // Verify token
         const decoded = verifyToken(token);
-        
+
         // Check if user still exists and is active
         const user = await User.findById(decoded.userId);
         if (!user || !user.isActive) {
@@ -26,7 +26,7 @@ const authenticate = async (req, res, next) => {
                 message: 'User not found or inactive'
             });
         }
-        
+
         // Check if account is locked
         if (user.isLocked) {
             return res.status(423).json({
@@ -34,7 +34,7 @@ const authenticate = async (req, res, next) => {
                 message: 'Account is temporarily locked'
             });
         }
-        
+
         // Attach user info to request
         req.user = {
             userId: decoded.userId,
@@ -42,26 +42,26 @@ const authenticate = async (req, res, next) => {
             username: decoded.username,
             role: decoded.role
         };
-        
+
         next();
-        
+
     } catch (error) {
         console.error('Authentication error:', error);
-        
+
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid token'
             });
         }
-        
+
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
                 success: false,
                 message: 'Token expired'
             });
         }
-        
+
         res.status(500).json({
             success: false,
             message: 'Authentication failed'
@@ -73,11 +73,11 @@ const authenticate = async (req, res, next) => {
 const optionalAuth = async (req, res, next) => {
     try {
         const authHeader = req.header('Authorization');
-        
+
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.substring(7);
             const decoded = verifyToken(token);
-            
+
             const user = await User.findById(decoded.userId);
             if (user && user.isActive && !user.isLocked) {
                 req.user = {
@@ -88,9 +88,9 @@ const optionalAuth = async (req, res, next) => {
                 };
             }
         }
-        
+
         next();
-        
+
     } catch (error) {
         // For optional auth, we continue even if token is invalid
         next();

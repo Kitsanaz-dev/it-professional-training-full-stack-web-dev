@@ -9,7 +9,7 @@ const authorize = (allowedRoles) => {
                     message: 'Authentication required'
                 });
             }
-
+            
             // Check if user role is in allowed roles
             if (!allowedRoles.includes(req.user.role)) {
                 return res.status(403).json({
@@ -19,9 +19,9 @@ const authorize = (allowedRoles) => {
                     current: req.user.role
                 });
             }
-
+            
             next();
-
+            
         } catch (error) {
             console.error('Authorization error:', error);
             res.status(500).json({
@@ -42,15 +42,15 @@ const authorizePermissions = (requiredPermissions) => {
                     message: 'Authentication required'
                 });
             }
-
+            
             // Get user permissions based on role
             const userPermissions = getRolePermissions(req.user.role);
-
+            
             // Check if user has all required permissions
             const hasPermissions = requiredPermissions.every(
                 permission => userPermissions.includes(permission)
             );
-
+            
             if (!hasPermissions) {
                 return res.status(403).json({
                     success: false,
@@ -59,9 +59,9 @@ const authorizePermissions = (requiredPermissions) => {
                     available: userPermissions
                 });
             }
-
+            
             next();
-
+            
         } catch (error) {
             console.error('Permission authorization error:', error);
             res.status(500).json({
@@ -78,17 +78,17 @@ const authorizeOwnership = (resourceParam = 'id') => {
         try {
             const resourceId = req.params[resourceParam];
             const userId = req.user.userId;
-
+            
             // Admin and managers can access any resource
             if (['admin', 'manager'].includes(req.user.role)) {
                 return next();
             }
-
+            
             // For other roles, check if they own the resource
             // This would need to be implemented per resource type
             // For now, we'll just pass through
             next();
-
+            
         } catch (error) {
             console.error('Ownership authorization error:', error);
             res.status(500).json({
@@ -131,7 +131,7 @@ const getRolePermissions = (role) => {
             'orders.read'
         ]
     };
-
+    
     return rolePermissions[role] || [];
 };
 
