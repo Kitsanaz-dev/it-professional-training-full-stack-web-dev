@@ -173,6 +173,72 @@ const login = async (req, res) => {
   }
 };
 
+// Refresh token
+const refreshToken = async (req, res) => {
+  try {
+      const { refreshToken } = req.body;
+      
+      if (!refreshToken) {
+          return res.status(401).json({
+              success: false,
+              message: 'Refresh token is required'
+          });
+      }
+      
+      // Verify refresh token
+      const decoded = verifyRefreshToken(refreshToken);
+      
+      // Find user and check if refresh token exists
+      const user = await User.findOne({
+          _id: decoded.userId,
+          'refreshTokens.token': refreshToken,
+          isActive: true
+      });
+      
+      if (!user) {
+          return res.status(401).json({
+              success: false,
+              message: 'Invalid refresh token'
+          });
+      }
+      
+      // Generate new tokens
+      const tokenPayload = {
+          userId: user._id,
+          email: user.email,
+          username: user.username,
+          role: user.role
+      };
+      
+      const newAccessToken = generateToken(tokenPayload);
+      const newRefreshToken = generateRefreshToken(tokenPayload);
+      
+      // Replace old refresh token with new one
+      user.refreshTokens = user.refreshTokens.filter(
+          token => token.token !== refreshToken
+      );
+      user.refreshTokens.push({ token: newRefreshToken });
+      await user.save();
+      
+      res.json({
+          success: true,
+          message: 'Token refreshed successfully',
+          data: {
+              accessToken: newAccessToken,
+              refreshToken: newRefreshToken,
+              expiresIn: process.env.JWT_EXPIRE || '7d'
+          }
+      });
+      
+  } catch (error) {
+      console.error('Token refresh error:', error);
+      res.status(401).json({
+          success: false,
+          message: 'Invalid or expired refresh token'
+      });
+  }
+};
+
 module.exports = {
   register
 };
