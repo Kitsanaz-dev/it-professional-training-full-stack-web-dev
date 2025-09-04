@@ -57,14 +57,14 @@ const initializeAdmin = async () => {
         }
 
         // Create admin user directly in database
-        const hashedPassword = await hashPassword(password);
+        // const hashedPassword = await hashPassword(password);
         
         const adminUser = new User({
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             email: email.toLowerCase().trim(),
             username: username.toLowerCase().trim(),
-            password: hashedPassword,
+            password: password,
             role: 'admin',
             isActive: true,
             isEmailVerified: true,
