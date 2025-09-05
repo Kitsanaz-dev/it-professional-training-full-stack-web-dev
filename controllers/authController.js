@@ -30,6 +30,7 @@ const register = async (req, res) => {
             password,
             role: assignedRole  // 🔒 Only basic roles allowed
         });
+        
         await user.save();
         // Generate tokens
         const tokenPayload = {

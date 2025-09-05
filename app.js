@@ -21,15 +21,13 @@ app.use(helmet());
 
 // Routes
 app.use(express.json());
-<<<<<<< HEAD
 
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the API', success: true, version: "1.0.0", author: "Kitsana" });
 });
 
 // Use routes
-=======
->>>>>>> parent of da96167 (add get in app.js)
+
 app.use('/api/hello', helloRoutes);
 app.use('/api/course', courseRoutes);
 app.use('/api/auth', authRoutes);
