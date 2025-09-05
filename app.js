@@ -10,7 +10,6 @@ const categoryRoutes = require('./routes/categoryRoute');
 const customerRoutes = require('./routes/customerRoute');
 const orderRoute = require('./routes/orderRoute');
 const userRoutes = require('./routes/userRoute');
-const { version } = require("mongoose");
 
 const app = express();
 
@@ -20,20 +19,17 @@ app.use(morgan('combined'));
 // Security middleware
 app.use(helmet());
 
-// Rate limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
-
 // Routes
 app.use(express.json());
+<<<<<<< HEAD
 
 app.get('/', (req, res) => {
-    res.json({ message: 'Welcome to the API', success: true, version: version });
+    res.json({ message: 'Welcome to the API', success: true, version: "1.0.0", author: "Kitsana" });
 });
 
+// Use routes
+=======
+>>>>>>> parent of da96167 (add get in app.js)
 app.use('/api/hello', helloRoutes);
 app.use('/api/course', courseRoutes);
 app.use('/api/auth', authRoutes);

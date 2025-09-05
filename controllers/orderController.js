@@ -5,7 +5,6 @@ const Product = require('../models/Product');
 const createOrder = async (req, res) => {
     try {
         const { items, customer, customerName, paymentMethod, tax, discount, notes } = req.body;
-
         // Validate and prepare order items with stock check
         const orderItems = [];
         const stockUpdates = [];
@@ -18,14 +17,12 @@ const createOrder = async (req, res) => {
                     message: `Product not found: ${item.product}`
                 });
             }
-
             if (product.stock < item.quantity) {
                 return res.status(400).json({
                     success: false,
                     message: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`
                 });
             }
-
             orderItems.push({
                 product: product._id,
                 name: product.name,
@@ -33,14 +30,12 @@ const createOrder = async (req, res) => {
                 quantity: item.quantity,
                 subtotal: product.price * item.quantity
             });
-
             // Prepare stock update
             stockUpdates.push({
                 productId: product._id,
                 newStock: product.stock - item.quantity
             });
         }
-
         // Create order
         const order = new Order({
             customer: customer || null,
@@ -51,9 +46,7 @@ const createOrder = async (req, res) => {
             paymentMethod,
             notes
         });
-
         const savedOrder = await order.save();
-
         // Update product stock
         for (let update of stockUpdates) {
             await Product.findByIdAndUpdate(
@@ -61,7 +54,6 @@ const createOrder = async (req, res) => {
                 { stock: update.newStock }
             );
         }
-
         res.status(201).json({
             success: true,
             message: 'Order created successfully',

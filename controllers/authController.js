@@ -6,16 +6,13 @@ const { comparePassword, validatePassword } = require('../utils/passwordUtils');
 const register = async (req, res) => {
     try {
         const { firstName, lastName, email, username, password, role = 'cashier' } = req.body;
-        
         // 🔒 Security: Ensure only basic roles can be assigned via public registration
         const allowedRoles = ['cashier', 'staff'];
         const assignedRole = allowedRoles.includes(role) ? role : 'cashier';
-        
         // Check if user already exists
         const existingUser = await User.findOne({
             $or: [{ email }, { username }]
         });
-        
         if (existingUser) {
             return res.status(409).json({
                 success: false,
@@ -24,7 +21,6 @@ const register = async (req, res) => {
                     'Username already taken'
             });
         }
-        
         // Create new user with limited role
         const user = new User({
             firstName,
@@ -34,9 +30,7 @@ const register = async (req, res) => {
             password,
             role: assignedRole  // 🔒 Only basic roles allowed
         });
-        
         await user.save();
-        
         // Generate tokens
         const tokenPayload = {
             userId: user._id,
@@ -44,14 +38,11 @@ const register = async (req, res) => {
             username: user.username,
             role: user.role
         };
-        
         const accessToken = generateToken(tokenPayload);
         const refreshToken = generateRefreshToken(tokenPayload);
-        
         // Save refresh token
         user.refreshTokens.push({ token: refreshToken });
         await user.save();
-        
         res.status(201).json({
             success: true,
             message: 'User registered successfully',
@@ -62,10 +53,8 @@ const register = async (req, res) => {
                 expiresIn: process.env.JWT_EXPIRE || '7d'
             }
         });
-        
     } catch (error) {
         console.error('Registration error:', error);
-        
         // Handle duplicate key errors
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern)[0];
@@ -73,8 +62,7 @@ const register = async (req, res) => {
                 success: false,
                 message: `${field} already exists`
             });
-        }
-        
+        } 
         res.status(500).json({
             success: false,
             message: 'Registration failed',
